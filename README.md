@@ -85,7 +85,7 @@ PolyMiner is a Python-based script designed to interact with the **Polymine (POL
 2. **Clone or Download PolyMiner**:
    ```bash
    git clone https://github.com/<your-repo>/polyminer.git
-   cd polyminer
+   cd Polyminer
    ```
 
 3. **Install Dependencies**:
