@@ -822,12 +822,19 @@ def stake(web3, private_key, contract_address, amount):
         logging.error("Staking transaction failed: %s", e)
 
 def unstake(web3, private_key, contract_address):
-    """Unstake tokens."""
     account = web3.eth.account.from_key(private_key)
     contract = web3.eth.contract(address=contract_address, abi=json.loads(CONTRACT_ABI))
     GAS_PRICE = web3.eth.gas_price
 
     try:
+        user_stake = contract.functions.stakes(account.address).call()
+        reward_pool = contract.functions.rewardPool().call()
+        total_staked = contract.functions.totalStaked().call()
+
+        logging.info(f"User Stake: {Web3.from_wei(user_stake[0], 'ether')} POLM")
+        logging.info(f"Reward Pool: {Web3.from_wei(reward_pool, 'ether')} POLM")
+        logging.info(f"Total Staked: {Web3.from_wei(total_staked, 'ether')} POLM")
+
         # Build transaction using contract function
         tx = contract.functions.unstake().build_transaction({
             'from': account.address,
@@ -847,6 +854,12 @@ def unstake(web3, private_key, contract_address):
             logging.info("Unstaking successful.")
         else:
             logging.error("Unstaking failed. Receipt: %s", receipt)
+
+        # Log updated contract state
+        reward_pool = contract.functions.rewardPool().call()
+        total_staked = contract.functions.totalStaked().call()
+        logging.info(f"Updated Reward Pool: {Web3.from_wei(reward_pool, 'ether')} POLM")
+        logging.info(f"Updated Total Staked: {Web3.from_wei(total_staked, 'ether')} POLM")
     except Exception as e:
         logging.error("Unstaking transaction failed: %s", e)
 
